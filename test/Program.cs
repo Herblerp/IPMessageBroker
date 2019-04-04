@@ -76,7 +76,7 @@ namespace test
                 publisher.NewMessage(bezoekerMessage);
                 publisher.NewMessage(eventMessage);
                 publisher.NewMessage(pingMessage);
-
+            Console.ReadLine();
         }
     }
 }
