@@ -47,7 +47,7 @@ namespace MessageBroker
 
         public void NewMessage(object msg)
         {
-            log.LogMessageType("Publishing message of type: ", msg.GetType().ToString().Substring(23));
+            log.LogMessageType("Publishing message of type: ", msg.GetType().Name);
 
             XmlSerializer mySerializer = new XmlSerializer(msg.GetType());
             StringWriter writer = new StringWriter();

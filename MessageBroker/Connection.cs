@@ -171,20 +171,26 @@ namespace MessageBroker
 
         private void EnableConsumer()
         {
-            var consumer = new EventingBasicConsumer(_consumerChannel);
-            consumer.Received += (model, ea) =>
+            try
             {
-                var body = ea.Body;
-                var message = Encoding.UTF8.GetString(body);
+                var consumer = new EventingBasicConsumer(_consumerChannel);
+                consumer.Received += (model, ea) =>
+                {
+                    var body = ea.Body;
+                    var message = Encoding.UTF8.GetString(body);
 
-                HandleMessage(message);
+                    HandleMessage(message);
 
-                _consumerChannel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
-            };
+                    _consumerChannel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+                };
 
-            _consumerChannel.BasicConsume(queue: _queueName,
-                                 autoAck: false,
-                                 consumer: consumer);
+                _consumerChannel.BasicConsume(queue: _queueName,
+                                     autoAck: false,
+                                     consumer: consumer);
+            }catch(OperationInterruptedException e)
+            {
+                log.LogMessage("Failed to enable consumer: " + e.Message + ".", "error");
+            }
         }
 
         private void HandleMessage(string message)
