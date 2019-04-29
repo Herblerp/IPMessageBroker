@@ -1,5 +1,4 @@
-﻿using MessageBroker.Messages;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using System;
@@ -41,6 +40,30 @@ namespace MessageBroker
 
         #endregion
 
+        public IModel ConsumerChannel
+        {
+            get
+            {
+                if (_isConnected)
+                {
+                    return _consumerChannel;
+                }
+                return null;
+            }
+        }
+
+        public IModel PublisherChannel
+        {
+            get
+            {
+                if (_isConnected)
+                {
+                    return _publisherChannel;
+                }
+                return null;
+            }
+        }
+
         public static Connection Instance
         {
             get
@@ -56,14 +79,6 @@ namespace MessageBroker
                 }
             }
         }
-        internal IModel PublisherChannel
-        {
-            get
-            {
-                return _publisherChannel;
-            }
-        }
-
 
         public bool IsConnected()
         {
@@ -152,8 +167,6 @@ namespace MessageBroker
                     _isConnecting = false;
                     _isConnected = true;
 
-                    EnableConsumer();
-
                     log.LogMessage("Successfully connected to RabbitMQ server.", "info");
                 }
                 catch (BrokerUnreachableException e)
@@ -167,279 +180,6 @@ namespace MessageBroker
             {
                 log.LogMessage("Called connect while already connected.", "debug");
             }
-        }
-
-        private void EnableConsumer()
-        {
-            try
-            {
-                var consumer = new EventingBasicConsumer(_consumerChannel);
-                consumer.Received += (model, ea) =>
-                {
-                    var body = ea.Body;
-                    var message = Encoding.UTF8.GetString(body);
-
-                    HandleMessage(message);
-
-                    _consumerChannel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
-                };
-
-                _consumerChannel.BasicConsume(queue: _queueName,
-                                     autoAck: false,
-                                     consumer: consumer);
-            }catch(OperationInterruptedException e)
-            {
-                log.LogMessage("Failed to enable consumer: " + e.Message + ".", "error");
-            }
-        }
-
-        private void HandleMessage(string xmlMessage)
-        {
-            try
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(xmlMessage);
-
-                //Get the type of the message
-                string messageType = doc.DocumentElement.Name;
-
-                log.LogMessageType("Received message of type: ",messageType);
-
-                if (messageType == "AankoopMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(AankoopMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    AankoopMessage message = (AankoopMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleAankoopMessage(message);
-                }
-
-                else if (messageType == "BadgeMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(BadgeMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    BadgeMessage message = (BadgeMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleBadgeMessage(message);
-                }
-
-                else if (messageType == "BezoekerMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(BezoekerMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    BezoekerMessage message = (BezoekerMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleBezoekerMessage(message);
-                }
-
-                else if (messageType == "CreditnotaMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(CreditnotaMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    CreditnotaMessage message = (CreditnotaMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleCreditnotaMessage(message);
-
-                }
-
-                else if (messageType == "ErrorMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(ErrorMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    ErrorMessage pingMessage = (ErrorMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleErrorMessage(pingMessage);
-                }
-
-                else if (messageType == "FactuurMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(FactuurMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    FactuurMessage pingMessage = (FactuurMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleFactuurMessage(pingMessage);
-                }
-
-                else if (messageType == "EventMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(EventMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    EventMessage message = (EventMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleEventMessage(message);
-                }
-
-                else if (messageType == "GroepRegistratieMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(GroepRegistratieMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    GroepRegistratieMessage message = (GroepRegistratieMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleGroepRegistratieMessage(message);
-                }
-
-                else if (messageType == "InschrijvingsMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(InschrijvingsMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    InschrijvingsMessage message = (InschrijvingsMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleInschrijvingsMessage(message);
-                }
-
-                else if (messageType == "KalenderMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(KalenderMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    KalenderMessage message = (KalenderMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleKalenderMessage(message);
-                }
-
-                else if (messageType == "KeepAliveMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(KeepAliveMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    KeepAliveMessage message = (KeepAliveMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleKeepAliveMessage(message);
-                }
-
-                else if (messageType == "LocatieMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(LocatieMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    LocatieMessage message = (LocatieMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleLocatieMessage(message);
-                }
-
-                else if (messageType == "OplaadMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(OplaadMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    OplaadMessage message = (OplaadMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleOplaadMessage(message);
-                }
-
-                else if (messageType == "OrganisatieMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(OrganisatieMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    OrganisatieMessage message = (OrganisatieMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleOrganisatieMessage(message);
-                }
-
-                else if (messageType == "PingMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(PingMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    PingMessage message = (PingMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandlePingMessage(message);
-                }
-
-                else if (messageType == "RegistratieMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(RegistratieMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    RegistratieMessage message = (RegistratieMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleRegistratieMessage(message);
-                }
-
-                else if (messageType == "ReservatieMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(ReservatieMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    ReservatieMessage message = (ReservatieMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleReservatieMessage(message);
-                }
-
-                else if (messageType == "SessieMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(SessieMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    SessieMessage message = (SessieMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleSessieMessage(message);
-                }
-
-                else if (messageType == "TaakMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(TaakMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    TaakMessage message = (TaakMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleTaakMessage(message);
-                }
-
-                else if (messageType == "VerkoopsItemMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(VerkoopsItemMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    VerkoopsItemMessage message = (VerkoopsItemMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleVerkoopsItemMessage(message);
-                }
-
-                else if (messageType == "WerkMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(WerkMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    WerkMessage message = (WerkMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleWerkMessage(message);
-                }
-
-                else if (messageType == "WerknemerMessage")
-                {
-                    log.LogMessage("Processing message.", "info");
-                    XmlSerializer serializer = new XmlSerializer(typeof(WerknemerMessage));
-                    XmlReader reader = new XmlNodeReader(doc);
-                    WerknemerMessage message = (WerknemerMessage)serializer.Deserialize(reader);
-
-                    _messageHandler.HandleWerknemerMessage(message);
-                }
-
-                else
-                {
-                    log.LogMessage("Discarding message", "warning");
-                }
-            }
-            catch (XmlException e)
-            {
-                log.LogMessage("Could not process message: " + e.GetType(), "error");
-            }
-        }
-
-        private Connection()
-        {
-
         }
     }
 }
