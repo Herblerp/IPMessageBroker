@@ -1,11 +1,7 @@
 ﻿using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using System;
-using System.Text;
 using System.Threading;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace MessageBroker
 {
@@ -89,7 +85,7 @@ namespace MessageBroker
             return false;
         }
 
-        public void OpenConnection(string userName, string password, string hostName, string queueName, IMessageHandler handler)
+        public void OpenConnection(string userName, string password, string hostName, IMessageHandler handler)
         {
             if (!_isConnecting && !_isConnected)
             {
@@ -99,7 +95,6 @@ namespace MessageBroker
                 _userName = userName;
                 _password = password;
                 _hostName = hostName;
-                _queueName = queueName;
 
                 _messageHandler = handler;
 

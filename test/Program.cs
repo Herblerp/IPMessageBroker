@@ -17,9 +17,8 @@ namespace test
             Publisher publisher = Publisher.Instance;
             IMessageHandler messageHandler = new test();
 
-            conn.OpenConnection("amqPlanning", "amqPlanning", "10.3.56.10", "Planning", messageHandler);
+            conn.OpenConnection("amqPlanning", "amqPlanning", "10.3.56.10", messageHandler);
 
-            Thread.Sleep(1000);
             while (true)
             {
                 publisher.NewMessage("HALLO KAKAS");
