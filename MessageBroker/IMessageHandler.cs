@@ -6,6 +6,10 @@ namespace MessageBroker
 {
     public interface IMessageHandler
     {
-        void HandleMessage(string message);
+        void HandleAankoopMessage(AankoopMessage aankoopMessage);
+        void HandleBadgeMessage(BadgeMessage badgeMessage);
+        void HandleBezoekerMessage(BezoekerMessage bezoekerMessage);
+        void HandleEventMessage(EventMessage eventMessage);
+        void HandlePingMessage(PingMessage pingMessage);
     }
 }

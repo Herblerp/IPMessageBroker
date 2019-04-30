@@ -176,6 +176,108 @@ namespace MessageBroker
                 log.LogMessage("Called connect while already connected.", "debug");
             }
         }
+
+        private void EnableConsumer()
+        {
+            try
+            {
+                var consumer = new EventingBasicConsumer(_consumerChannel);
+                consumer.Received += (model, ea) =>
+                {
+                    var body = ea.Body;
+                    var message = Encoding.UTF8.GetString(body);
+
+                    HandleMessage(message);
+
+                    _consumerChannel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+                };
+
+                _consumerChannel.BasicConsume(queue: _queueName,
+                                     autoAck: false,
+                                     consumer: consumer);
+            }catch(OperationInterruptedException e)
+            {
+                log.LogMessage("Failed to enable consumer: " + e.Message + ".", "error");
+            }
+        }
+
+        private void HandleMessage(string message)
+        {
+            try
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(message);
+
+                //Get the type of the message
+                string messageType = doc.DocumentElement.Name;
+
+                log.LogMessageType("Received message of type: ",messageType);
+
+                if (messageType == "AankoopMessage")
+                {
+                    log.LogMessage("Processing message.", "info");
+                    XmlSerializer serializer = new XmlSerializer(typeof(AankoopMessage));
+                    XmlReader reader = new XmlNodeReader(doc);
+                    AankoopMessage AankoopMessage = (AankoopMessage)serializer.Deserialize(reader);
+
+                    _messageHandler.HandleAankoopMessage(AankoopMessage);
+                }
+
+                else if (messageType == "BadgeMessage")
+                {
+                    log.LogMessage("Processing message.", "info");
+                    XmlSerializer serializer = new XmlSerializer(typeof(BadgeMessage));
+                    XmlReader reader = new XmlNodeReader(doc);
+                    BadgeMessage BadgeMessage = (BadgeMessage)serializer.Deserialize(reader);
+
+                    _messageHandler.HandleBadgeMessage(BadgeMessage);
+                }
+
+                else if (messageType == "BezoekerMessage")
+                {
+                    log.LogMessage("Processing message.", "info");
+                    XmlSerializer serializer = new XmlSerializer(typeof(BezoekerMessage));
+                    XmlReader reader = new XmlNodeReader(doc);
+                    BezoekerMessage BezoekerMessage = (BezoekerMessage)serializer.Deserialize(reader);
+
+                    _messageHandler.HandleBezoekerMessage(BezoekerMessage);
+                }
+
+                else if (messageType == "EventMessage")
+                {
+                    log.LogMessage("Processing message.", "info");
+                    XmlSerializer serializer = new XmlSerializer(typeof(EventMessage));
+                    XmlReader reader = new XmlNodeReader(doc);
+                    EventMessage eventMessage = (EventMessage)serializer.Deserialize(reader);
+
+                    _messageHandler.HandleEventMessage(eventMessage);
+                }
+
+                else if (messageType == "PingMessage")
+                {
+                    log.LogMessage("Processing message.", "info");
+                    XmlSerializer serializer = new XmlSerializer(typeof(PingMessage));
+                    XmlReader reader = new XmlNodeReader(doc);
+                    PingMessage pingMessage = (PingMessage)serializer.Deserialize(reader);
+
+                    _messageHandler.HandlePingMessage(pingMessage);
+                }
+                
+                else
+                {
+                    log.LogMessage("Discarding message", "info");
+                }
+            }
+            catch (XmlException e)
+            {
+                log.LogMessage("Could not process message: " + e.GetType(), "error");
+            }
+        }
+
+        private Connection()
+        {
+
+        }
     }
 }
 
