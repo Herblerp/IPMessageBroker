@@ -45,11 +45,18 @@ namespace MessageBroker
             }
         }
 
-        public void NewMessage(string msg)
-        { 
-            if (!PublishMessage(msg))
+        public void NewMessage(object msg)
+        {
+            log.LogMessageType("Publishing message of type: ", msg.GetType().Name);
+
+            XmlSerializer mySerializer = new XmlSerializer(msg.GetType());
+            StringWriter writer = new StringWriter();
+            mySerializer.Serialize(writer, msg);
+            string xmlMessage = writer.ToString();
+
+            if (!PublishMessage(xmlMessage))
             {
-                CacheMessage(msg);
+                CacheMessage(xmlMessage);
             }
         }
 

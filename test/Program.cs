@@ -1,4 +1,5 @@
 ﻿using MessageBroker;
+using MessageBroker.Messages;
 using System;
 using System.Threading;
 
@@ -19,7 +20,7 @@ namespace test
 
             conn.OpenConnection("amqPlanning", "amqPlanning", "10.3.56.10", messageHandler);
 
-            while (true)
+            AankoopMessage aankoopMessage = new AankoopMessage
             {
                 header = new AankoopMessageHeader { },
                 body = new AankoopMessageBody
@@ -75,7 +76,7 @@ namespace test
                 publisher.NewMessage(bezoekerMessage);
                 publisher.NewMessage(eventMessage);
                 publisher.NewMessage(pingMessage);
-
+            Console.ReadLine();
         }
     }
 }
