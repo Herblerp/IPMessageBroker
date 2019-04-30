@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <PackageId>Quodes.IP.MessageBroker.ErrorMessage</PackageId>
+    <Company>Quodes.IP.MessageBroker.ErrorMessage</Company>
+    <Authors>Quodes.IP.MessageBroker.ErrorMessage</Authors>
+    <Product>Quodes.IP.MessageBroker.ErrorMessage</Product>
+    <Description>The ErrorMessage module for the message broker.</Description>
+    <PackageLicenseUrl>https://creativecommons.org/licenses/by-nc/4.0/</PackageLicenseUrl>
+  </PropertyGroup>
+
+</Project>

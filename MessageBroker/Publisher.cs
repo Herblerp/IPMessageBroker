@@ -45,19 +45,12 @@ namespace MessageBroker
             }
         }
 
-        public void NewMessage(object msg)
+        public void NewMessage(string msg)
         {
             log.LogMessageType("Publishing message of type: ", msg.GetType().Name);
 
-            XmlSerializer mySerializer = new XmlSerializer(msg.GetType());
-            StringWriter writer = new StringWriter();
-            mySerializer.Serialize(writer, msg);
-            string xmlMessage = writer.ToString();
-
-            if (!PublishMessage(xmlMessage))
-            {
-                CacheMessage(xmlMessage);
-            }
+            CacheMessage(msg);
+            PublishCachedMessages(msg);
         }
 
         private bool PublishMessage(string msg)
@@ -96,13 +89,10 @@ namespace MessageBroker
         private void CacheMessage(string msg)
         {
             _cachedMessages.Add(msg);
-            log.LogMessage("Message added to cache.", "info");
         }
 
         private void PublishCachedMessages(Object stateInfo)
         {
-            log.LogMessage("Checking cached messages.", "info");
-
             lock (_padlock)
             {
                 if (_cachedMessages.Count > 0)
