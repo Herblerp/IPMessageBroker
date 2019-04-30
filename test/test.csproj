@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ErrorMessage\ErrorMessage.csproj" />
     <ProjectReference Include="..\MessageBroker\MessageBroker.csproj" />
   </ItemGroup>
 
