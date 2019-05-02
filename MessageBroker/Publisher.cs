@@ -47,7 +47,7 @@ namespace MessageBroker
 
         public void NewMessage(string msg)
         {
-            log.LogMessageType("Publishing message of type: ", msg.GetType().Name);
+            log.LogMessageType("New message of type: ", msg.GetType().Name);
 
             CacheMessage(msg);
             PublishCachedMessages(msg);

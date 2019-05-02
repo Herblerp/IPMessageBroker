@@ -34,7 +34,7 @@ namespace MessageBroker
 
         private const int _hearbeatInterval = 5;
         private const int _connectionTimeoutInterval = 5000;
-        private const int _retryConnectionInterval = 30000;
+        private const int _retryConnectionInterval = 15000;
 
         #endregion
 
@@ -156,7 +156,7 @@ namespace MessageBroker
                 }
                 catch (BrokerUnreachableException e)
                 {
-                    log.LogMessage("Connection failed: " + e.Message + "Retrying in " + _retryConnectionInterval / 1000 + " seconds.", "error");
+                    log.LogMessage("Connection failed: " + e.Message + ". Retrying in " + _retryConnectionInterval / 1000 + " seconds.", "error");
                 }
             }
             else
