@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ErrorMessageNS
+namespace Messages
 {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
@@ -192,29 +192,5 @@ namespace ErrorMessageNS
 
         /// <remarks/>
         Info,
-    }
-
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    public enum systeemNaam
-    {
-
-        /// <remarks/>
-        CRM,
-
-        /// <remarks/>
-        Planning,
-
-        /// <remarks/>
-        Kassa,
-
-        /// <remarks/>
-        Facturatie,
-
-        /// <remarks/>
-        Frontend,
-
-        /// <remarks/>
-        Monitor,
     }
 }

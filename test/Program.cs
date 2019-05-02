@@ -1,10 +1,10 @@
-﻿using ErrorMessageNS;
-using MessageBroker;
+﻿using MessageBroker;
+using Messages;
 using System;
 using System.Threading;
 
 
-namespace test
+namespace Example
 {
     class Program
     {
@@ -22,28 +22,16 @@ namespace test
 
             Thread.Sleep(1000);
 
-            ErrorMessage errorMessage = new ErrorMessage()
-            {
-                header = new ErrorMessageHeader()
-                {
-                    sender = systeemNaam.Planning,
-                    timestamp = DateTime.Now,
-                    versie = "1"
-                },
-                body = new ErrorMessageBody()
-                {
-                    errorBericht = "Ik ben een errorbericht"
-                }
-            };
+            TestUtilities util = new TestUtilities();
 
-            ErrorMessageHandler handler = new ErrorMessageHandler();
-
-            publisher.NewMessage(handler.ConvertToXml(errorMessage));
+            util.SendAllMessagesOnce();
 
             log.LogMessage("Press any key to stop the program.", "info");
             Console.ReadLine();
 
             conn.CloseConnection();
+
+            
         }
     }
 }
