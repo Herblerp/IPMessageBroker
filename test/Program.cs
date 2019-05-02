@@ -30,8 +30,6 @@ namespace Example
             Console.ReadLine();
 
             conn.CloseConnection();
-
-            
         }
     }
 }
