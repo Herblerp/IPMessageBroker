@@ -8,12 +8,12 @@ namespace Example
 
         public void HandleMessage(string xmlMessage)
         {
-            log.LogMessage("Received message: " + xmlMessage, "info");
+            //log.LogMessage("Received message: " + xmlMessage, "info");
 
-            Serializer serializer = new Serializer();
-            object message = serializer.DeserializeMessage(xmlMessage);
+            //Serializer serializer = new Serializer();
+            //object message = serializer.DeserializeMessage(xmlMessage);
 
-            log.LogMessage("Great success!", "info");
+            //log.LogMessage("Great success!", "info");
         }
     }
 }

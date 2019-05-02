@@ -61,8 +61,6 @@ namespace Example
             };
             publisher.NewMessage(serializer.SerializeMessage(eventMessage));
 
-
-
         }
     }
 }
