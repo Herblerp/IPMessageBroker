@@ -18,7 +18,7 @@ namespace Example
             log.Welcome();
 
             IMessageHandler messageHandler = new MessageHandler();
-            conn.OpenConnection("amqPlanning", "amqPlanning", "10.3.56.10", "Planning", messageHandler);
+            conn.OpenConnection("amqPlanning", "amqPlanning", "10.3.56.10", "Planning", null);
 
             Thread.Sleep(1000);
 

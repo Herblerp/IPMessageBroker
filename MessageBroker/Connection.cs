@@ -150,7 +150,14 @@ namespace MessageBroker
                     _isConnecting = false;
                     _isConnected = true;
 
-                    EnableConsumer();
+                    if (_messageHandler != null)
+                    {
+                        EnableConsumer();
+                    }
+                    else
+                    {
+                        log.LogMessage("Message handler is null. Consumer will not be enabled.", "warning");
+                    }
 
                     log.LogMessage("Successfully connected to RabbitMQ server.", "info");
                 }
