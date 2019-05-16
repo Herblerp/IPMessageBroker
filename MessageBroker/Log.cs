@@ -7,6 +7,7 @@ namespace MessageBroker
 {
     public class Log
     {
+
         private static string _logTitle;
         private static bool _showDebug;
 
@@ -26,7 +27,6 @@ namespace MessageBroker
                         if (_instance == null)
                         {
                             _logTitle = "Log_" + DateTime.Now.ToString("MM-dd-yy_H-mm-ss") + ".txt";
-
                             _instance = new Log();
 
                             if (!Directory.Exists("Logs"))
@@ -52,6 +52,11 @@ namespace MessageBroker
 
 ";
             Console.WriteLine(message);
+        }
+
+        public void SetLogFileTitle(string title)
+        {
+            _logTitle = title + "_" + DateTime.Now.ToString("MM-dd-yy_H-mm-ss") + ".txt";
         }
 
         public void ShowDebugMessages(bool showdebug)

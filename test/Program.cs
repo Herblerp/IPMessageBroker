@@ -11,11 +11,13 @@ namespace Example
         static void Main(string[] args)
         {
             Log log = Log.Instance;
+            log.SetLogFileTitle("Sender");
+            log.ShowDebugMessages(true);
+            log.Welcome();
             Connection conn = Connection.Instance;
             Publisher publisher = Publisher.Instance;
 
-            log.ShowDebugMessages(true);
-            log.Welcome();
+            
 
             IMessageHandler messageHandler = new MessageHandler();
             conn.OpenConnection("amqPlanning", "amqPlanning", "10.3.56.10", "Planning", null);
