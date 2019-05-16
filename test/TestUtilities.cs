@@ -28,7 +28,7 @@ namespace Example
                     errorBericht = "Ik ben een errorbericht"
                 }
             };
-            publisher.NewMessage(serializer.SerializeMessage(errorMessage));
+            publisher.NewMessage(serializer.SerializeMessage(errorMessage),"errorEx");
 
             EventMessage eventMessage = new EventMessage()
             {
@@ -59,7 +59,7 @@ namespace Example
                     startDatum = DateTime.Now
                 }
             };
-            publisher.NewMessage(serializer.SerializeMessage(eventMessage));
+            publisher.NewMessage(serializer.SerializeMessage(eventMessage),"errorEx");
 
         }
     }

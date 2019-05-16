@@ -15,7 +15,7 @@ namespace MessageBroker
         private static Publisher _instance;
         private static readonly object _padlock = new object();
 
-        private List<string> _cachedMessages;
+        private List<MessageWrapper> _cachedMessages;
         private Timer _sendCachedMessagesTimer;
         private AutoResetEvent _sendCachedMessagesAutoEvent;
 
@@ -23,7 +23,7 @@ namespace MessageBroker
 
         private Publisher()
         {
-            _cachedMessages = new List<string>();
+            _cachedMessages = new List<MessageWrapper>();
             _sendCachedMessagesAutoEvent = new AutoResetEvent(false);
             _sendCachedMessagesTimer = new Timer(PublishCachedMessages, _sendCachedMessagesAutoEvent, _sendCachedMessagesInterval, _sendCachedMessagesInterval);
             log.LogMessage("Publisher initialized, checking cache every " + _sendCachedMessagesInterval, "debug");
@@ -45,24 +45,29 @@ namespace MessageBroker
             }
         }
 
-        public void NewMessage(string msg)
+        public void NewMessage(string msg, string exchange)
         {
-            CacheMessage(msg);
-            PublishCachedMessages(msg);
+            MessageWrapper wrapper = new MessageWrapper
+            {
+                msg = msg,
+                exchange = exchange
+            };
+            CacheMessage(wrapper);
+            PublishCachedMessages(wrapper);
         }
 
-        private bool PublishMessage(string msg)
+        private bool PublishMessage(MessageWrapper wrapper)
         {
             try
             {
                 if (Connection.Instance.IsConnected())
                 {
-                    var body = Encoding.UTF8.GetBytes(msg);
+                    var body = Encoding.UTF8.GetBytes(wrapper.msg);
 
                     var properties = Connection.Instance.PublisherChannel.CreateBasicProperties();
                     properties.Persistent = true;
 
-                    Connection.Instance.PublisherChannel.BasicPublish(exchange: "amq.fanout",
+                    Connection.Instance.PublisherChannel.BasicPublish(exchange: wrapper.exchange,
                                          routingKey: "",
                                          basicProperties: properties,
                                          body: body);
@@ -84,9 +89,9 @@ namespace MessageBroker
             }
         }
 
-        private void CacheMessage(string msg)
+        private void CacheMessage(MessageWrapper wrapper)
         {
-            _cachedMessages.Add(msg);
+            _cachedMessages.Add(wrapper);
         }
 
         private void PublishCachedMessages(Object stateInfo)
