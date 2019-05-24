@@ -1,9 +1,12 @@
-﻿using RabbitMQ.Client;
+﻿using Messages;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using System;
+using System.IO;
 using System.Text;
 using System.Threading;
+using System.Xml.Serialization;
 
 namespace MessageBroker
 {
@@ -23,18 +26,25 @@ namespace MessageBroker
 
         private bool _isConnecting = false;
         private bool _isConnected = false;
+        private bool _keepAlive = false;
 
         private string _userName;
         private string _password;
         private string _hostName;
         private string _queueName;
+        private string _system;
+        private string _subsystem;
 
         private Timer _retryConnectionTimer;
         private AutoResetEvent _retryConnectionAutoEvent;
 
+        private Timer _keepAliveTimer;
+        private AutoResetEvent _keepAliveAutoEvent;
+
         private const int _hearbeatInterval = 5;
         private const int _connectionTimeoutInterval = 5000;
         private const int _retryConnectionInterval = 15000;
+        private const int _keepAliveInterval = 30000;
 
         #endregion
 
@@ -71,7 +81,39 @@ namespace MessageBroker
             return false;
         }
 
-        public void OpenConnection(string userName, string password, string hostName, string queueName, IMessageHandler handler)
+        public void EnableKeepAlive(string system, string subsystem)
+        {
+            if (!_keepAlive)
+            {
+                _system = system;
+                _subsystem = subsystem;
+
+                _keepAliveAutoEvent = new AutoResetEvent(false);
+                _keepAliveTimer = new Timer(KeepAlive, _keepAliveAutoEvent, 0, _keepAliveInterval);
+            }
+        }
+
+        public void OpenConnection(string userName, string password, string hostName)
+        {
+            if (!_isConnecting && !_isConnected)
+            {
+                log.LogMessage("Creating connection.", "info");
+                _isConnecting = true;
+
+                _userName = userName;
+                _password = password;
+                _hostName = hostName;
+
+                _retryConnectionAutoEvent = new AutoResetEvent(false);
+                _retryConnectionTimer = new Timer(Connect, _retryConnectionAutoEvent, 0, _retryConnectionInterval);
+            }
+            else
+            {
+                log.LogMessage("Creating connection while already connected or connecting. Please close the connection first.", "error");
+            }
+        }
+
+        public void OpenConnection(string serviceName, string userName, string password, string hostName, string queueName, IMessageHandler handler)
         {
             if (!_isConnecting && !_isConnected)
             {
@@ -82,6 +124,7 @@ namespace MessageBroker
                 _password = password;
                 _hostName = hostName;
                 _queueName = queueName;
+                _serviceName = serviceName;
 
                 _messageHandler = handler;
 
@@ -158,7 +201,6 @@ namespace MessageBroker
                     {
                         log.LogMessage("Message handler is null. Consumer will not be enabled.", "warning");
                     }
-
                     log.LogMessage("Successfully connected to RabbitMQ server.", "info");
                 }
                 catch (BrokerUnreachableException e)
@@ -189,12 +231,46 @@ namespace MessageBroker
 
                 _consumerChannel.BasicConsume(queue: _queueName,
                                      autoAck: false,
-                                     consumer: consumer);
+                                     consumer: consumer); 
             }
             catch (OperationInterruptedException e)
             {
                 log.LogMessage("Failed to enable consumer: " + e.Message + ".", "error");
             }
+        }
+
+        private void KeepAlive(Object stateInfo)
+        {
+            if (_isConnected)
+            {
+                KeepAliveMessage keepAliveMessage = new KeepAliveMessage
+                {
+                    header = new KeepAliveMessageHeader
+                    {
+                        sender = _system,
+                        timestamp = DateTime.Now,
+                        versie = 0
+                    },
+                    body = new KeepAliveMessageBody
+                    {
+                        systeem = _system,
+                        subsysteem = _subsystem
+                    }
+                };
+                log.LogMessage("Sending keepalive message.", "info");
+                Publisher.Instance.NewMessage(SerializeMessage(keepAliveMessage), "errorEx");
+            }
+        }
+
+        private string SerializeMessage(Object message)
+        {
+            XmlSerializer mySerializer = new XmlSerializer(message.GetType());
+            StringWriter writer = new StringWriter();
+            string typeoiu = message.GetType().ToString();
+            mySerializer.Serialize(writer, message);
+            string xmlMessage = writer.ToString();
+
+            return xmlMessage;
         }
 
         private Connection()

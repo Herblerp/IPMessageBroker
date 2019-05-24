@@ -78,8 +78,6 @@ namespace MessageBroker
                         string log = "[" + stime + "] INFO: " + message;
 
                         _writer.WriteLine(log);
-
-                        Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine(log);
                     }
                     else if (severity == "warning")
@@ -87,8 +85,6 @@ namespace MessageBroker
                         string log = "[" + stime + "] WARNING: " + message;
 
                         _writer.WriteLine(log);
-
-                        Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine(log);
                     }
                     else if (severity == "error")
@@ -96,8 +92,6 @@ namespace MessageBroker
                         string log = "[" + stime + "] ERROR: " + message;
 
                         _writer.WriteLine(log);
-
-                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(log);
                     }
                     else if (severity == "debug" && _showDebug)
@@ -105,8 +99,6 @@ namespace MessageBroker
                         string log = "[" + stime + "] DEBUG: " + message;
 
                         _writer.WriteLine(log);
-
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
                         Console.WriteLine(log);
                     }
                     else if (severity != "debug")
@@ -114,11 +106,8 @@ namespace MessageBroker
                         string log = "[" + stime + "] ?????: " + message;
 
                         _writer.WriteLine(log);
-
-                        Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine(log);
                     }
-                    Console.ForegroundColor = ConsoleColor.White;
                 }
             }
         }
@@ -129,11 +118,8 @@ namespace MessageBroker
             string stime = time.ToString("hh:mm:ss.ff");
             string log = "[" + stime + "] INFO: " + message;
 
-            Console.ForegroundColor = ConsoleColor.White;
             Console.Write(log);
-            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(type.ToUpper());
-            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }

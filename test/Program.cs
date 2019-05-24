@@ -14,19 +14,36 @@ namespace Example
             log.SetLogFileTitle("Sender");
             log.ShowDebugMessages(true);
             log.Welcome();
-            Connection conn = Connection.Instance;
             Publisher publisher = Publisher.Instance;
+
+            Connection conn = Connection.Instance;
+
+            conn.OpenConnection("amqPlanning", "amqPlanning", "10.3.56.10", "", null);
+
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+
+            Thread.Sleep(20000);
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+            conn.CloseConnection();
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
+            publisher.NewMessage("MijnError", "errorEx");
 
             
 
-            IMessageHandler messageHandler = new MessageHandler();
-            conn.OpenConnection("amqPlanning", "amqPlanning", "10.3.56.10", "amq.fanout", null);
+            //TestUtilities util = new TestUtilities();
 
-            Thread.Sleep(1000);
-
-            TestUtilities util = new TestUtilities();
-
-            util.SendAllMessagesOnce();
+            //util.SendAllMessagesOnce();
 
             log.LogMessage("Press any key to stop the program.", "info");
             Console.ReadLine();
