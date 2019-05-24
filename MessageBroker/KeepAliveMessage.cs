@@ -13,9 +13,37 @@
 //
 using System;
 
-namespace Messages {
-    
-    
+namespace KeepAlive {
+
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    public enum SysteemNaam
+    {
+
+        /// <remarks/>
+        CRM,
+
+        /// <remarks/>
+        Planning,
+
+        /// <remarks/>
+        Kassa,
+
+        /// <remarks/>
+        Facturatie,
+
+        /// <remarks/>
+        Frontend,
+
+        /// <remarks/>
+        Monitor,
+
+        PlanningPDT,
+        FrontendPDT,
+        EmailPDT
+
+    }
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "0.0.0.0")]
     [System.SerializableAttribute()]

@@ -1,4 +1,4 @@
-﻿using Messages;
+﻿using KeepAlive;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
@@ -32,7 +32,7 @@ namespace MessageBroker
         private string _password;
         private string _hostName;
         private string _queueName;
-        private string _system;
+        private SysteemNaam _system;
         private string _subsystem;
 
         private Timer _retryConnectionTimer;
@@ -44,7 +44,7 @@ namespace MessageBroker
         private const int _hearbeatInterval = 5;
         private const int _connectionTimeoutInterval = 5000;
         private const int _retryConnectionInterval = 15000;
-        private const int _keepAliveInterval = 30000;
+        private const int _keepAliveInterval = 1000;
 
         #endregion
 
@@ -71,7 +71,6 @@ namespace MessageBroker
             }
         }
 
-
         public bool IsConnected()
         {
             if (_connection != null)
@@ -81,7 +80,7 @@ namespace MessageBroker
             return false;
         }
 
-        public void EnableKeepAlive(string system, string subsystem)
+        public void EnableKeepAlive(SysteemNaam system, string subsystem)
         {
             if (!_keepAlive)
             {
@@ -113,7 +112,7 @@ namespace MessageBroker
             }
         }
 
-        public void OpenConnection(string serviceName, string userName, string password, string hostName, string queueName, IMessageHandler handler)
+        public void OpenConnection(string userName, string password, string hostName, string queueName, IMessageHandler handler)
         {
             if (!_isConnecting && !_isConnected)
             {
@@ -124,7 +123,6 @@ namespace MessageBroker
                 _password = password;
                 _hostName = hostName;
                 _queueName = queueName;
-                _serviceName = serviceName;
 
                 _messageHandler = handler;
 

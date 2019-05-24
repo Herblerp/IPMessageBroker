@@ -11,8 +11,8 @@ namespace Example
         {
             log.LogMessage("Received message: " + xmlMessage, "info");
 
-            Serializer serializer = new Serializer();
-            object message = serializer.DeserializeMessage(xmlMessage);
+            //Serializer serializer = new Serializer();
+            //object message = serializer.DeserializeMessage(xmlMessage);
 
             log.LogMessage("Great success!", "info");
         }
