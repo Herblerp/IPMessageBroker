@@ -44,7 +44,7 @@ namespace MessageBroker
         private const int _hearbeatInterval = 5;
         private const int _connectionTimeoutInterval = 5000;
         private const int _retryConnectionInterval = 15000;
-        private const int _keepAliveInterval = 1000;
+        private const int _keepAliveInterval = 30000;
 
         #endregion
 
@@ -96,7 +96,7 @@ namespace MessageBroker
         {
             if (!_isConnecting && !_isConnected)
             {
-                log.LogMessage("Creating connection.", "info");
+                log.LogMessage("Creating connection.", "debug");
                 _isConnecting = true;
 
                 _userName = userName;
@@ -116,7 +116,7 @@ namespace MessageBroker
         {
             if (!_isConnecting && !_isConnected)
             {
-                log.LogMessage("Creating connection.", "info");
+                log.LogMessage("Creating connection.", "debug");
                 _isConnecting = true;
 
                 _userName = userName;
@@ -159,7 +159,7 @@ namespace MessageBroker
             }
             _isConnected = false;
 
-            log.LogMessage("Connection closed.", "info");
+            log.LogMessage("Connection closed.", "debug");
         }
 
         private void Connect(Object stateInfo)
@@ -177,7 +177,7 @@ namespace MessageBroker
 
                 try
                 {
-                    log.LogMessage("Connecting to RabbitMQ server.", "info");
+                    log.LogMessage("Connecting to RabbitMQ server.", "debug");
                     _connection = factory.CreateConnection();
                     _consumerChannel = _connection.CreateModel();
                     _publisherChannel = _connection.CreateModel();
